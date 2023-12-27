@@ -52,7 +52,7 @@ router.post("/users/logout", auth, async (req, res) => {
 });
 
 router.get("/users/me", auth, async (req, res) => {
-  res.send(req.user);
+  res.send({userData:req.user});
 });
 
 router.post("/users/addAbility", auth, async (req, res) => {
