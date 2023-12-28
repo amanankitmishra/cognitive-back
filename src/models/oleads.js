@@ -4,109 +4,49 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const oleadsSchema = new mongoose.Schema({
-  name: {
+  oleadFor:{
     type: String,
     required: true,
-    trim: true,
+    trim: true
   },
-  email: {
+  project: {
     type: String,
-    unique: true,
+    trim: true
+  },
+  siteAddress: {
+    type: String,
+    trim: true
+  },
+  siteLocation: {
+    type: String,
+    trim: true
+  },
+  enquiryExpectedBy: {
+    type: Date,    
+  },
+  leadSource: {
+    type: String,
+    trim: true
+  },
+  leadDate: {
+    type: Date
+  },
+  clientId : {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Client',
     required: true,
-    trim: true,
-    lowercase: true,
-    validate(value) {
-      if (!validator.isEmail(value)) {
-        throw new Error("Email is Invalid");
-      }
-    },
-  },
-  password: {
-    type: String,
-    required: true,
-    trim: true,
-    minlength: 7,
-    validate(value) {
-      if (value.toLowerCase().includes("password")) {
-        throw new Error("Password cannot contain PASSWORD");
-      }
-    },
-  },
-  age: {
-    type: Number,
-    min: 1,
-    max: 130,
-  },
-  role: {
-    type: String,
-    default: "client",
-  },
-  avatar: {
-    type: String,
-    trim: true,
-  },
-  tokens: [
-    {
-      token: {
-        type: String,
-        required: true,
+    validate: {
+      validator: async function (value) {
+        const client = await mongoose.model('Client').findById(value);
+        return client !== null;
       },
-    },
-  ],
-  ability: [
-    {
-      action: {
-        type: String,
-        required: true,
-      },
-      subject: {
-        type: String,
-        required: true,
-      },
-    },
-  ],
+      message: 'Invalid clientId. Client does not exist.'
+    }
+  }
 });
 
 
-userSchema.methods.toJSON = function () {
-  const user = this;
-  const userObject = user.toObject();
 
-  delete userObject.password;
-  delete userObject.tokens;
+const Oleads = mongoose.model("Oleads", oleadsSchema);
 
-  return userObject;
-};
-
-userSchema.methods.generateAuthToken = async function () {
-  const user = this;
-  const token = jwt.sign({ _id: user.id.toString() }, process.env.JSON_SECRET);
-  user.tokens = user.tokens.concat({ token });
-  await user.save();
-  return token;
-};
-
-userSchema.statics.findByCredentials = async (email, password) => {
-  const user = await User.findOne({ email });
-  if (!user) {
-    throw new Error("Unable to login");
-  }
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    throw new Error("Unable to login");
-  }
-  return user;
-};
-
-//hash the password before saving
-userSchema.pre("save", async function (next) {
-  const user = this;
-  if (user.isModified("password")) {
-    user.password = await bcrypt.hash(user.password, 8);
-  }
-  next();
-});
-
-const User = mongoose.model("User", userSchema);
-
-module.exports = User;
+module.exports = Oleads;

@@ -60,7 +60,7 @@ router.patch("/clients/:id", auth, async (req, res) => {
 
     res.send(client);
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).send({ error: e });
   }
 });
 
@@ -132,6 +132,17 @@ router.post("/clients/addVisit/:id", auth, async (req, res) => {
     res.status(201).send(client);
   } catch (e) {
     res.status(400).send(e);
+  }
+});
+
+// Get Client List
+
+router.get("/allClients/names", auth, async (req, res) => {
+  try {
+    const clients = await Client.find().select("_id clientName").sort({ clientName: -1 });
+    res.status(200).send(clients);
+  } catch (e) {
+    res.status(500).send(e);
   }
 });
 

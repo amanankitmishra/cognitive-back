@@ -1,10 +1,11 @@
 const express = require("express");
-const OLead = require("../models/olead");
+const Oleads = require("../models/oleads");
 const router = new express.Router();
+const auth = require("../middleware/auth");
 
 // Create a new olead
-router.post("/oleads", async (req, res) => {
-  const olead = new OLead(req.body);
+router.post("/oleads", auth, async (req, res) => {
+  const olead = new Oleads(req.body);
   try {
     await olead.save();
     res.status(201).send(olead);
@@ -14,20 +15,20 @@ router.post("/oleads", async (req, res) => {
 });
 
 // Get all oleads
-router.get("/oleads", async (req, res) => {
+router.get("/oleads", auth, async (req, res) => {
   try {
-    const oleads = await OLead.find();
-    res.send(oleads);
+    const oleads = await Oleads.find().populate('clientId', '_id clientName');    
+    res.status(200).send({ allOleads: oleads });
   } catch (e) {
     res.status(500).send();
   }
 });
 
 // Get olead by ID
-router.get("/oleads/:id", async (req, res) => {
+router.get("/oleads/:id", auth, async (req, res) => {
   const _id = req.params.id;
   try {
-    const olead = await OLead.findById(_id);
+    const olead = await Oleads.findById(_id);
     if (!olead) {
       return res.status(404).send();
     }
@@ -38,10 +39,19 @@ router.get("/oleads/:id", async (req, res) => {
 });
 
 // Update olead by ID
-router.patch("/oleads/:id", async (req, res) => {
+router.patch("/oleads/:id", auth, async (req, res) => {
   const _id = req.params.id;
   const updates = Object.keys(req.body);
-  const allowedUpdates = ["name", "status", "contactPerson", "contactNumber"];
+  const allowedUpdates = [
+    "oleadFor",
+    "project",
+    "siteAddress",
+    "siteLocation",
+    "enquiryExpectedBy",
+    "leadSource",
+    "leadDate",
+    "clientId"
+  ];
   const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
   if (!isValidOperation) {
@@ -49,7 +59,7 @@ router.patch("/oleads/:id", async (req, res) => {
   }
 
   try {
-    const olead = await OLead.findById(_id);
+    const olead = await Oleads.findById(_id);
     if (!olead) {
       return res.status(404).send();
     }
@@ -64,10 +74,10 @@ router.patch("/oleads/:id", async (req, res) => {
 });
 
 // Delete olead by ID
-router.delete("/oleads/:id", async (req, res) => {
+router.delete("/oleads/:id", auth, async (req, res) => {
   const _id = req.params.id;
   try {
-    const olead = await OLead.findByIdAndDelete(_id);
+    const olead = await Oleads.findByIdAndDelete(_id);
     if (!olead) {
       return res.status(404).send();
     }
