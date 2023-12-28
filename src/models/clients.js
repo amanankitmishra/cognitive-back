@@ -20,12 +20,6 @@ const clientSchema = new mongoose.Schema({
         trim: true,
         enum: ["contractor","consultant","others"]
     },
-    lastVisit: {
-        type: Date        
-    },
-    nextVisit: {
-        type :Date
-    },
     contactPersons: [
         {
             contactPerson: {
@@ -46,7 +40,23 @@ const clientSchema = new mongoose.Schema({
                 },
             },
         }
-    ]
+    ],
+    visits: [
+        {
+          visitDate: {
+            type: Date,
+            required: true,
+          },
+          purpose:{
+            type: String,
+            trim: true
+          },
+          summary: {
+            type: String,
+            trim: true
+          }
+        },
+      ],
 });
 
 

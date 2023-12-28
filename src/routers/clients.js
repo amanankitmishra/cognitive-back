@@ -78,4 +78,61 @@ router.delete("/clients/:id", auth, async (req, res) => {
   }
 });
 
+// Add contact person to client by ID
+router.post("/clients/addContactPerson/:id", auth, async (req, res) => {
+  const clientId = req.params.id;
+
+  try {
+    const client = await Client.findById(clientId);
+    if (!client) {
+      return res.status(404).send();
+    }
+
+    // Extract contact person details from the request body
+    const { contactPerson, contactNumber, contactEmail } = req.body;
+
+    // Validate that contactPerson is provided
+    if (!contactPerson) {
+      return res.status(400).send({ error: "Contact person name is required." });
+    }
+
+    // Create a new contact person object
+    const newContactPerson = {
+      contactPerson,
+      contactNumber,
+      contactEmail,
+    };
+
+    // Push the new contact person to the client's contactPersons array
+    client.contactPersons.push(newContactPerson);
+
+    // Save the updated client
+    await client.save();
+
+    res.status(201).send(client);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+
+// Add a new visit to the client
+router.post("/clients/addVisit/:id", auth, async (req, res) => {
+  const _id = req.params.id;
+
+  try {
+    const client = await Client.findById(_id);
+    if (!client) {
+      return res.status(404).send();
+    }
+
+    const { visitDate, purpose, summary } = req.body;
+    client.visits.push({ visitDate, purpose, summary });
+
+    await client.save();
+    res.status(201).send(client);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+
 module.exports = router;
