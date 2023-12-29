@@ -7,6 +7,7 @@ const cors = require('cors');
 const userRouter = require('./routers/user');
 const clientRouter = require('./routers/clients');
 const oleadsRouter = require('./routers/oleads');
+const enquiryRouter = require('./routers/enquiry')
 
 
 const app = express()
@@ -21,6 +22,7 @@ app.use(express.json())
 app.use(userRouter);
 app.use(clientRouter);
 app.use(oleadsRouter);
+app.use(enquiryRouter);
 
 app.listen(port, () => {
     console.log('Server is up on port ' + port)
