@@ -30,7 +30,7 @@ router.get("/clients/:id", auth, async (req, res) => {
   try {
     const client = await Client.findById(_id);
     if (!client) {
-      return res.status(404).send();
+      return res.status(404).send({error: " no client"});
     }
     res.send(client);
   } catch (e) {
