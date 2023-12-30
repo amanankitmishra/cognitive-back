@@ -146,4 +146,29 @@ router.get("/allClients/names", auth, async (req, res) => {
   }
 });
 
+//Get all visits
+
+router.get('/visits', async (req, res) => {
+  try {
+    // Fetch all clients from the database
+    const clients = await Client.find({}, 'clientName visits');
+
+    // Transform clients' visits into the desired format
+    const allVisits = clients.flatMap((client) => {
+      return client.visits.map((visit) => ({
+        clientName: client.clientName,
+        visitDate: visit.visitDate,
+        purpose: visit.purpose,
+        summary: visit.summary,
+      }));
+    });
+
+    // Respond with the transformed data
+    res.status(200).json(allVisits);
+  } catch (error) {
+    console.error('Error fetching visits:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 module.exports = router;
