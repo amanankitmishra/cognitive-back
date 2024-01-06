@@ -50,7 +50,8 @@ router.patch("/oleads/:id", auth, async (req, res) => {
     "enquiryExpectedBy",
     "leadSource",
     "leadDate",
-    "clientId"
+    "clientId",
+    "remark"
   ];
   const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 

@@ -62,7 +62,8 @@ const enquirySchema = new mongoose.Schema({
         type: Number
     },
     remark: {
-        type: String
+        type: String,
+        trim:true
     }
 
 })

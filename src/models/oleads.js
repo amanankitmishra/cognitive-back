@@ -31,6 +31,10 @@ const oleadsSchema = new mongoose.Schema({
   leadDate: {
     type: Date
   },
+  remark: {
+    type: String,
+    trim: true
+  },
   clientId : {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Client',
