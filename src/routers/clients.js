@@ -89,7 +89,7 @@ router.post("/clients/addContactPerson/:id", auth, async (req, res) => {
     }
 
     // Extract contact person details from the request body
-    const { contactPerson, contactNumber, contactEmail } = req.body;
+    const { contactPerson, contactNumber, contactEmail, contactDesignation } = req.body;
 
     // Validate that contactPerson is provided
     if (!contactPerson) {
@@ -101,6 +101,7 @@ router.post("/clients/addContactPerson/:id", auth, async (req, res) => {
       contactPerson,
       contactNumber,
       contactEmail,
+      contactDesignation
     };
 
     // Push the new contact person to the client's contactPersons array

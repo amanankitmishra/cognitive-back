@@ -95,7 +95,7 @@ router.get("/livehotproposals", auth, async (req, res) => {
   router.get("/consultantproposals", auth, async (req, res) => {
     try {
       // Fetch all "HOT" proposals from the database
-      const Proposals = await Proposal.find({ budgetory: "CONSULTANT" }).populate('clientId', '_id clientName');
+      const Proposals = await Proposal.find({ status: "CONSULTANT" }).populate('clientId', '_id clientName');
   
       res.status(200).json(Proposals);
     } catch (error) {
@@ -107,7 +107,7 @@ router.get("/livehotproposals", auth, async (req, res) => {
   router.get("/contractorproposals", auth, async (req, res) => {
     try {
       // Fetch all "HOT" proposals from the database
-      const Proposals = await Proposal.find({ budgetory: "CONTRACTOR" }).populate('clientId', '_id clientName');
+      const Proposals = await Proposal.find({ status: "CONTRACTOR" }).populate('clientId', '_id clientName');
   
       res.status(200).json(Proposals);
     } catch (error) {

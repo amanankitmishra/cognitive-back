@@ -39,6 +39,10 @@ const clientSchema = new mongoose.Schema({
                     message: "{VALUE} is not a valid email",
                 },
             },
+            contactDesignation: {
+                type: String,
+                trim: true
+            }
         }
     ],
     visits: [

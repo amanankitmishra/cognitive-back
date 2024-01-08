@@ -20,14 +20,8 @@ const proposalSchema = new mongoose.Schema({
     status: {
         type: String,
         required: true,
-        enum: ["LIVE", "LIVE-HOT"]
+        enum: ["LIVE", "LIVE-HOT","CONSULTANT", "CONTRACTOR"]
     },
-    budgetory: {
-        type: String,
-        required: true,
-        enum: ["CONSULTANT", "CONTRACTOR"]
-    },
-
     project: {
         type: String,
         required: true,
