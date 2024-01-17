@@ -70,8 +70,7 @@ router.delete('/proposals/:id', auth, async (req, res) => {
 router.get("/liveproposals", auth, async (req, res) => {
     try {
       // Fetch all "HOT" proposals from the database
-      const hotProposals = await Proposal.find({ status: "LIVE" }).populate('clientId', '_id clientName');
-  
+      const hotProposals = await Proposal.find({ status: "LIVE" }).populate('clientId', '_id clientName');  
       res.status(200).json(hotProposals);
     } catch (error) {
       console.error('Error fetching HOT proposals:', error);
