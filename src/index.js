@@ -10,6 +10,7 @@ const oleadsRouter = require('./routers/oleads');
 const enquiryRouter = require('./routers/enquiry');
 const boqRouter = require('./routers/boq');
 const proposalRouter = require('./routers/proposal');
+const salesOrderRouter = require('./routers/salesOrder');
 
 
 const app = express()
@@ -27,6 +28,7 @@ app.use(oleadsRouter);
 app.use(enquiryRouter);
 app.use(boqRouter);
 app.use(proposalRouter);
+app.use(salesOrderRouter);
 
 app.listen(port, () => {
     console.log('Server is up on port ' + port)

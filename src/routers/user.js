@@ -51,6 +51,18 @@ router.post("/users/logout", auth, async (req, res) => {
   }
 });
 
+router.get('/users', auth, async (req,res) => {
+  try {
+      const user = await User.find()
+      if(!user) {
+          return res.status(404).send()
+      }
+      res.send(user)
+  } catch (e) {
+      res.status(500).send()
+  }
+})
+
 router.get("/users/me", auth, async (req, res) => {
   res.send({userData:req.user});
 });
@@ -113,17 +125,17 @@ router.delete("/users/me/avatar", auth, async (req, res) => {
   }
 });
 
-// router.get('/users/:id', auth, async (req,res) => {
-//     try {
-//         const user = await User.findById(req.params.id)
-//         if(!user) {
-//             return res.status(404).send()
-//         }
-//         res.send(user)
-//     } catch (e) {
-//         res.status(500).send()
-//     }
-// })
+router.get('/users/:id', auth, async (req,res) => {
+    try {
+        const user = await User.findById(req.params.id)
+        if(!user) {
+            return res.status(404).send()
+        }
+        res.send(user)
+    } catch (e) {
+        res.status(500).send()
+    }
+})
 
 router.patch("/users/me", auth, async (req, res) => {
   const updates = Object.keys(req.body);
