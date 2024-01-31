@@ -18,7 +18,7 @@ const clientSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        enum: ["contractor","consultant","others"]
+        enum: ["contractor","consultant","others","endCustomer"]
     },
     contactPersons: [
         {
