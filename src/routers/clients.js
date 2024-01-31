@@ -116,6 +116,38 @@ router.post("/clients/addContactPerson/:id", auth, async (req, res) => {
   }
 });
 
+//Edit Contact Person
+router.put('/clients/editContactPerson/:clientId/contactpersons/:contactPersonId', auth, async (req, res) => {
+  const clientId = req.params.clientId;
+  const contactPersonId = req.params.contactPersonId;
+
+  try {
+      const client = await Client.findById(clientId);
+
+      // Find the index of the contactPerson in the array
+      const contactPersonIndex = client.contactPersons.findIndex(
+          (cp) => cp._id.toString() === contactPersonId
+      );
+
+      // Check if the contactPerson exists
+      if (contactPersonIndex === -1) {
+          return res.status(404).json({ error: 'Contact Person not found' });
+      }
+
+      // Update the contactPerson details
+      client.contactPersons[contactPersonIndex] = {
+          ...client.contactPersons[contactPersonIndex],
+          ...req.body, // Update with the request body
+      };
+
+      await client.save();
+      res.json(client);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server Error' });
+  }
+});
+
 // Add a new visit to the client
 router.post("/clients/addVisit/:id", auth, async (req, res) => {
   const _id = req.params.id;

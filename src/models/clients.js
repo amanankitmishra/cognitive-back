@@ -34,10 +34,6 @@ const clientSchema = new mongoose.Schema({
             contactEmail: {
                 type: String,
                 trim: true,
-                validate: {
-                    validator: validator.isEmail,
-                    message: "{VALUE} is not a valid email",
-                },
             },
             contactDesignation: {
                 type: String,
