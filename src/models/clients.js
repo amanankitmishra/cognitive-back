@@ -11,14 +11,21 @@ const clientSchema = new mongoose.Schema({
     },
     officeAddress: {
         type: String,
-        required: true,
+        trim: true
+    },
+    city: {
+        type: String,
+        trim: true
+    },
+    state: {
+        type: String,
         trim: true
     },
     nature: {
         type: String,
         required: true,
         trim: true,
-        enum: ["contractor","consultant","others","endCustomer"]
+        enum: ["contractor", "consultant", "others", "endCustomer"]
     },
     contactPersons: [
         {
@@ -43,20 +50,32 @@ const clientSchema = new mongoose.Schema({
     ],
     visits: [
         {
-          visitDate: {
-            type: Date,
-            required: true,
-          },
-          purpose:{
-            type: String,
-            trim: true
-          },
-          summary: {
-            type: String,
-            trim: true
-          }
+            visitDate: {
+                type: Date,
+                required: true,
+            },
+            purpose: {
+                type: String,
+                trim: true
+            },
+            summary: {
+                type: String,
+                trim: true
+            },
+            userId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
+                required: true,
+                validate: {
+                    validator: async function (value) {
+                        const client = await mongoose.model('User').findById(value);
+                        return client !== null;
+                    },
+                    message: 'Invalid userId. User does not exist.'
+                }
+            }
         },
-      ],
+    ],
 });
 
 
