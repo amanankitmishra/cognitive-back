@@ -23,6 +23,14 @@ const meetingSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    status: {
+        type: Boolean,
+        default: true,
+    },
+    agenda: {
+        type:String,
+        trim: true
+    }
 });
 
 const Meeting = mongoose.model('Meeting', meetingSchema);

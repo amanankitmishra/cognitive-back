@@ -6,7 +6,7 @@ const auth = require("../middleware/auth");
 // Create a meeting
 router.post('/meetings', auth, async (req, res) => {
     try {
-        const { meetingDate, clientId, clientName, location } = req.body;
+        const { meetingDate, clientId, clientName, location, agenda } = req.body;
         const userId = req.user._id;
 
         const newMeeting = new Meeting({
@@ -14,6 +14,8 @@ router.post('/meetings', auth, async (req, res) => {
             clientId,
             clientName,
             location,
+            userId,
+            agenda
         });
 
         await newMeeting.save();
@@ -28,7 +30,8 @@ router.post('/meetings', auth, async (req, res) => {
 // Read all meetings
 router.get('/meetings', auth, async (req, res) => {
     try {
-        const meetings = await Meeting.find({ userId: req.user_id });
+        const meetings = await Meeting.find({ userId: req.user._id, status: true});
+
         res.status(200).json({ meetings });
     } catch (error) {
         console.error(error);
