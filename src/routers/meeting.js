@@ -30,9 +30,52 @@ router.post('/meetings', auth, async (req, res) => {
 // Read all meetings
 router.get('/meetings', auth, async (req, res) => {
     try {
-        const meetings = await Meeting.find({ userId: req.user._id, status: true});
+        const meetings = await Meeting.find({ userId: req.user._id}).sort({ meetingDate: 1 });
 
         res.status(200).json({ meetings });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+//today's meetings
+
+router.get('/todaysMeetings', auth, async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const upcomingMeetings = await Meeting.find({
+            userId: req.user._id,
+            meetingDate: { $gte: today, $lt: new Date(today.getTime() + 48 * 60 * 60 * 1000) },
+            status: true
+        }).sort({ meetingDate: 1 });
+
+        res.status(200).json({ upcomingMeetings });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+//Mark a Meeting Complete
+
+router.put('/markComplete/:meetingId', auth, async (req, res) => {
+    try {
+        const { meetingId } = req.params;
+
+        // Check if the user has the right to mark this meeting as complete (optional)
+        const meeting = await Meeting.findOne({ _id: meetingId, userId: req.user._id });
+        
+        if (!meeting) {
+            return res.status(404).json({ message: 'Meeting not found or unauthorized to mark as complete' });
+        }
+
+        // Update the meeting status to false
+        await Meeting.findByIdAndUpdate(meetingId, { $set: { status: false } });
+
+        res.status(200).json({ message: 'Meeting marked as complete' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
