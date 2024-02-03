@@ -66,7 +66,7 @@ const enquirySchema = new mongoose.Schema({
         trim:true
     }
 
-})
+}, { timestamps: true })
 
 
 const Enquiry = mongoose.model("Enquiry", enquirySchema);

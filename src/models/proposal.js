@@ -57,7 +57,7 @@ const proposalSchema = new mongoose.Schema({
         type: String
     }
 
-})
+}, { timestamps: true })
 
 const Proposal = new mongoose.model("Proposal", proposalSchema);
 module.exports = Proposal

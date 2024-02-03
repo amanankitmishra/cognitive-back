@@ -205,7 +205,7 @@ const salesOrderSchema = new mongoose.Schema({
         default: 0,
         required: true
     }
-});
+}, { timestamps: true });
 
 const SalesOrder = mongoose.model("SalesOrder", salesOrderSchema);
 module.exports = SalesOrder;

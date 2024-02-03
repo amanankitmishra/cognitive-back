@@ -27,7 +27,7 @@ const boqSchema = new mongoose.Schema({
       remark: {
         type: String,
       },
-})
+}, { timestamps: true })
 
 const Boq = mongoose.model('Boq', boqSchema)
 module.exports= Boq;

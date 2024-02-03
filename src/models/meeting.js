@@ -31,7 +31,7 @@ const meetingSchema = new mongoose.Schema({
         type:String,
         trim: true
     }
-});
+}, { timestamps: true });
 
 const Meeting = mongoose.model('Meeting', meetingSchema);
 

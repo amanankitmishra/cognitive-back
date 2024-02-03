@@ -26,7 +26,7 @@ const customerSchema = new mongoose.Schema({
     min: 1000000000,
     max: 9999999999,
   },
-});
+}, { timestamps: true });
 
 // customerSchema.virtual('tasks', {
 //     ref: 'Task',

@@ -76,7 +76,7 @@ const clientSchema = new mongoose.Schema({
             }
         },
     ],
-});
+}, { timestamps: true });
 
 
 
