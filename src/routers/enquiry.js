@@ -17,8 +17,8 @@ router.post("/enquiries", auth, async (req, res) => {
 // Get all enquiries
 router.get("/enquiries", auth, async (req, res) => {
   try {
-    const enquiries = await Enquiry.find().populate('clientId', '_id clientName'); ;
-    res.status(200).send({ allEnquiries: enquiries });
+    const enquiries = await Enquiry.find().populate('clientId', '_id clientName');
+    res.status(200).json(enquiries);
   } catch (e) {
     res.status(500).send();
   }

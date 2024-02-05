@@ -62,21 +62,82 @@ router.get('/proposalReports', auth, async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 router.get('/enquiryReports', auth, async (req, res) => {
   try {
     // Fetch Enquiry data
-    const enquiries = await Enquiry.find();
+    const currentFinancialYear = getCurrentFinancialYear();
+    const startDate = new Date(`${currentFinancialYear}-04-01T00:00:00.000Z`);
+    const endDate = new Date(`${currentFinancialYear + 1}-03-31T23:59:59.999Z`);
+
+    const enquiries = await Enquiry.find({
+      createdAt: { $gte: startDate, $lt: endDate },
+    });
 
     // Process data for the graph
-    const monthlyData = Array.from({ length: 12 }, () => ({ count: 0 }));
+    const monthlyData = Array.from({ length: 12 }, (_, monthIndex) => {
+      const monthName = new Date(currentFinancialYear, monthIndex, 1).toLocaleDateString('en-US', { month: 'long' });
+      return { month: monthName, enquiries: 0 };
+    });
 
     enquiries.forEach((enquiry) => {
-      const month = new Date(enquiry.createdAt).getMonth();
-      monthlyData[month].count += 1;
+      const monthIndex = new Date(enquiry.createdAt).getMonth();
+      monthlyData[monthIndex].enquiries += 1;
     });
 
     res.json({ monthlyData });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.get('/enquiriesCount', auth, async (req, res) => {
+  try {
+    const currentYear = new Date().getFullYear();
+
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    const enquiryCounts = await Enquiry.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(`${currentYear}-01-01T00:00:00Z`),
+            $lte: new Date(`${currentYear}-12-31T23:59:59Z`)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$createdAt' },
+            month: { $month: '$createdAt' }
+          },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { '_id.year': 1, '_id.month': 1 }
+      }
+    ]);
+
+    // Initialize the response array with all months set to 0
+    const response = monthNames.map((monthName, index) => ({
+      year: currentYear,
+      month: monthName,
+      count: 0
+    }));
+
+    // Update the counts based on the aggregated data
+    enquiryCounts.forEach((entry) => {
+      const { month } = entry._id;
+      const monthIndex = month - 1; // Adjust month to be zero-based
+      response[monthIndex].count = entry.count;
+    });
+
+    res.json(response);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });

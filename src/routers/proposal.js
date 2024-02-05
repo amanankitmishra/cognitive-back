@@ -1,6 +1,7 @@
 const express = require('express');
 const Proposal = require('../models/proposal');
 const auth = require('../middleware/auth');
+const {multipleUpload} = require('../utility/fileUpload');
 
 const router = express.Router();
 
@@ -114,5 +115,38 @@ router.get("/livehotproposals", auth, async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });
+
+  router.post('/addRevision/:proposalId', multipleUpload, async (req, res) => {
+    const { proposalId } = req.params;
+    const { revisionNumber, comment } = req.body;
+    const files = req.files.map(file => file.path);
+
+    try {
+        // Find the proposal by ID
+        const proposal = await Proposal.findById(proposalId);
+
+        if (!proposal) {
+            return res.status(404).json({ error: 'Proposal not found' });
+        }
+
+        // Check if the revisionNumber is unique
+        const isUnique = proposal.revisions.every(revision => revision.revisionNumber !== revisionNumber);
+
+        if (!isUnique) {
+            return res.status(400).json({ error: 'Revision number must be unique' });
+        }
+
+        // Add the new revision with file details
+        proposal.revisions.push({ revisionNumber, files, comment });
+
+        // Save the updated proposal
+        await proposal.save();
+
+        res.status(201).json(proposal);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 module.exports = router;
