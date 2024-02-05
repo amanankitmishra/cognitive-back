@@ -65,7 +65,11 @@ const proposalSchema = new mongoose.Schema({
                 immutable: true
             },
             files: [String],
-            comment: String
+            comment: String,
+            timestamp: {
+                type: Date,
+                default: Date.now
+            }
         }
     ]
 

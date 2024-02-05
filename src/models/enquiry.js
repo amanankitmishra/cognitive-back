@@ -40,26 +40,9 @@ const enquirySchema = new mongoose.Schema({
         trim: true,
         enum: ["YES", "NO"]
     },
-    offerSubmissionDate: {
+    enquiryDate: {
         type: Date,
         trim: true
-    },
-    quotedValue: {
-        type: Number,        
-    },
-    quotedMarginPercentage: {
-        type: Number
-    },
-    quotedMarginValue: {
-        type: Number
-    },
-    revision: {
-        type: String,
-        trim: true,
-        enum: ["R1", "R2", "R3", "R4", "R5"]
-    },
-    ratePerWatt: {
-        type: Number
     },
     remark: {
         type: String,

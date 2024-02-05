@@ -2,6 +2,8 @@ const express = require('express')
 require('./db/mongoose')
 const cors = require('cors'); 
 
+const path = require('path');
+
 
 //Routers
 const userRouter = require('./routers/user');
@@ -21,6 +23,7 @@ const port = process.env.PORT
 
 
 app.use(cors())
+app.use('/uploads', express.static('uploads'));
 
 
 app.use(express.json());
