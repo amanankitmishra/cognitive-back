@@ -1,6 +1,7 @@
 const express = require("express");
 const Client = require("../models/clients")
 const Proposal = require("../models/proposal")
+const Enquiry = require("../models/enquiry")
 const router = new express.Router();
 const auth = require("../middleware/auth");
 
@@ -30,11 +31,12 @@ router.get("/clients/:id", auth, async (req, res) => {
   const _id = req.params.id;
   try {
     const client = await Client.findById(_id);
-    const proposals = await Proposal.find({clientId: _id})
+    const proposals = await Proposal.find({clientId: _id});
+    const enquiries = await Enquiry.find({clientId: _id});
     if (!client) {
       return res.status(404).send({ error: " no client" });
     }
-    res.send({client, proposals});
+    res.send({client, proposals, enquiries});
   } catch (e) {
     res.status(500).send();
   }
