@@ -61,7 +61,6 @@ const proposalSchema = new mongoose.Schema({
             revisionNumber: {
                 type: String,
                 enum: ["R1", "R2", "R3", "R4", "R5"],
-                unique: true,
                 immutable: true
             },
             files: [String],
