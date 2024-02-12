@@ -43,19 +43,14 @@ router.patch("/enquiries/:id", auth, async (req, res) => {
   const _id = req.params.id;
   const updates = Object.keys(req.body);
   const allowedUpdates = [
+    "capacity",
     "clientId",
+    "enquiryDate",
+    "offerSubmitted",
     "project",
     "projectType",
-    "capacity",
-    "uom",
-    "offerSubmitted",
-    "offerSubmissionDate",
-    "quotedValue",
-    "quotedMarginPercentage",
-    "quotedMarginValue",
-    "revision",
-    "ratePerWatt",
-    "remark"
+    "remark",
+    "uom"
   ];
   const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
