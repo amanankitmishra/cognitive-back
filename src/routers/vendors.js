@@ -85,4 +85,64 @@ router.delete("/vendors/:id", auth, async (req, res) => {
     }
   });
 
+  router.patch('/vendors/editContactPerson/:clientId/contactPersons/:contactPersonId', auth, async (req, res) => {
+    const vendorId = req.params.clientId;
+    const contactPersonId = req.params.contactPersonId;
+  
+    try {
+      const vendor = await Vendor.findById(vendorId);
+  
+      // Find the index of the contactPerson in the array
+      const contactPersonIndex = vendor.contactPersons.findIndex(
+        (cp) => cp._id.toString() === contactPersonId
+      );
+  
+      // Check if the contactPerson exists
+      if (contactPersonIndex === -1) {
+        return res.status(404).json({ error: 'Contact Person not found' });
+      }
+  
+      // Update the contactPerson details
+      vendor.contactPersons[contactPersonIndex] = {
+        ...vendor.contactPersons[contactPersonIndex],
+        ...req.body, // Update with the request body
+      };
+  
+      await vendor.save();
+      res.json(vendor);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server Error' });
+    }
+  });
+
+  router.delete("/vendors/deleteContactPerson/:vendorId/contactPersons/:contactId", auth, async (req, res) => {
+    const vendorId = req.params.vendorId;
+    const contactPersonId = req.params.contactId;
+  
+    try {
+      const vendor = await Vendor.findById(vendorId);
+  
+      // Find the index of the contactPerson in the array
+      const contactPersonIndex = vendor.contactPersons.findIndex(
+        (cp) => cp._id.toString() === contactPersonId
+      );
+  
+      // Check if the contactPerson exists
+      if (contactPersonIndex === -1) {
+        return res.status(404).json({ error: 'Contact Person not found' });
+      }
+  
+      // Remove the contactPerson from the array
+      vendor.contactPersons.splice(contactPersonIndex, 1);
+  
+      await vendor.save();
+      res.json(vendor);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server Error' });
+    }
+  
+  })
+
 module.exports = router;
