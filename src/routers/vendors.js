@@ -145,4 +145,13 @@ router.delete("/vendors/:id", auth, async (req, res) => {
   
   })
 
+  router.get("/allVendors/names", auth, async (req, res) => {
+    try {
+      const vendors = await Vendor.find().select("_id vendorName").sort({ vendorName: -1 });
+      res.status(200).send(vendors);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+
 module.exports = router;

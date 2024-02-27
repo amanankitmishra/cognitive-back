@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const tradingEnquiryNumberSchema = new mongoose.Schema({
+const tradingProposalNumberSchema = new mongoose.Schema({
     prefix: {
         type: String,
         required: true,
@@ -20,13 +20,13 @@ const tradingEnquiryNumberSchema = new mongoose.Schema({
     }
 }, { timestamps: true })
 
-tradingEnquiryNumberSchema.methods.incrementCurrentNumber = async function () {
+tradingProposalNumberSchema.methods.incrementCurrentNumber = async function () {
     this.currentNumber = this.currentNumber + 1;
     await this.save();
     return this.currentNumber;
 };
 
-tradingEnquiryNumberSchema.statics.getNextNumber = async function () {
+tradingProposalNumberSchema.statics.getNextNumber = async function () {
     const activeDocument = await this.findOne({ active: true });
 
     if (activeDocument) {
@@ -39,5 +39,5 @@ tradingEnquiryNumberSchema.statics.getNextNumber = async function () {
     return null;
 };
 
-const TradingEnquiryNumber = mongoose.model('TradingEnquiryNumber', tradingEnquiryNumberSchema)
-module.exports= TradingEnquiryNumber;
+const TradingProposalNumber = mongoose.model('TradingProposalNumber', tradingProposalNumberSchema)
+module.exports= TradingProposalNumber;

@@ -63,4 +63,14 @@ router.delete("/products/:id", auth, async (req, res) => {
     }
 });
 
+//GetProductList
+router.get("/allProducts/names", auth, async (req, res) => {
+    try {
+      const products = await Product.find().select("_id name").sort({ name: -1 });
+      res.status(200).send(products);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+
 module.exports = router;
