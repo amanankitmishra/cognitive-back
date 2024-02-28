@@ -14,7 +14,14 @@ const boqRouter = require('./routers/boq');
 const proposalRouter = require('./routers/proposal');
 const salesOrderRouter = require('./routers/salesOrder');
 const meetingRouter = require('./routers/meeting');
-const analyticsRouter = require('./routers/analytics')
+const analyticsRouter = require('./routers/analytics');
+const productRouter = require('./routers/product');
+const vendorRouter = require('./routers/vendors');
+const tradingEnquiryRouter = require('./routers/tradingEnquiry');
+const tradingProposalRouter = require('./routers/tradingProposal');
+const tradingSalesOrder = require('./routers/tradingSalesOrder');
+
+const settingsRouter = require('./routers/settings');
 
 
 const app = express()
@@ -36,6 +43,12 @@ app.use(proposalRouter);
 app.use(salesOrderRouter);
 app.use(meetingRouter);
 app.use(analyticsRouter);
+app.use(productRouter);
+app.use(vendorRouter);
+app.use(settingsRouter);
+app.use(tradingEnquiryRouter);
+app.use(tradingProposalRouter);
+app.use(tradingSalesOrder);
 
 app.listen(port, () => {
     console.log('Server is up on port ' + port)
