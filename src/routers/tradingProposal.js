@@ -1,5 +1,6 @@
 const express = require("express");
 const Proposal = require("../models/tradingProposal");
+const Product = require("../models/product");
 const auth = require("../middleware/auth");
 const { multipleUpload } = require("../utility/fileUpload");
 const TradingProposalNumber = require("../models/tradingProposalNumber");
@@ -26,7 +27,8 @@ router.get("/tradingProposals/:id", auth, async (req, res) => {
     if (!proposal) {
       return res.status(404).json({ error: "Proposal not found" });
     }
-    res.json(proposal);
+    const product = await Product.findById(proposal.productId)
+    res.json({proposal,product});
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
