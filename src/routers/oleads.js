@@ -17,7 +17,7 @@ router.post("/oleads", auth, async (req, res) => {
 // Get all oleads
 router.get("/oleads", auth, async (req, res) => {
   try {
-    const oleads = await Oleads.find().populate('clientId', '_id clientName');    
+    const oleads = await Oleads.find().populate('clientId', '_id clientName');
     res.status(200).send({ allOleads: oleads });
   } catch (e) {
     res.status(500).send();

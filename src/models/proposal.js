@@ -17,6 +17,10 @@ const proposalSchema = new mongoose.Schema({
             message: 'Invalid clientId. Client does not exist.'
         }
     },
+    quotationNumber: {
+        type: String,
+        required: true
+    },
     status: {
         type: String,
         required: true,
