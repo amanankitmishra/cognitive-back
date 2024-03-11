@@ -1,6 +1,8 @@
 const express = require('express');
 const TradingEnquiryNumber = require('../models/tradingEnquiryNumber');
 const TradingProposalNumber = require('../models/tradingProposalNumber');
+const EnquiryNumber = require('../models/enquiryNumber');
+const ProposalNumber = require('../models/proposalNumber');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
@@ -152,7 +154,7 @@ router.post('/tradingProposalNumber', auth, async (req, res) => {
 });
 
 // Read: Get the next tradingProposalNumber
-router.get('/nextTradingEnquiryNumber', auth, async (req, res) => {
+router.get('/nextTradingProposalNumber', auth, async (req, res) => {
     try {
         const updatedCurrentNumber = await TradingProposalNumber.getNextNumber();
         if (updatedCurrentNumber) {
@@ -263,6 +265,270 @@ router.delete('/tradingProposalNumber/:id', auth, async (req, res) => {
         res.status(500).send();
     }
 });
+
+
+
+// Create a new EnquiryNumber
+router.post('/enquiryNumber', auth, async (req, res) => {
+    try {
+        const ccc = {
+            prefix: req.body.prefix,
+            startingNumber : req.body.startingNumber,
+            currentNumber : req.body.startingNumber
+        }
+        const enquiryNumber = new EnquiryNumber(ccc);
+        await enquiryNumber.save();
+        res.status(201).send(enquiryNumber);
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
+// Read: Get the next EnquiryNumber
+router.get('/nextEnquiryNumber', auth, async (req, res) => {
+    try {
+        const updatedCurrentNumber = await EnquiryNumber.getNextNumber();
+        if (updatedCurrentNumber) {
+            res.status(200).send({ currentNumber: updatedCurrentNumber });
+        } else {
+            res.status(404).send("No active Sequence");
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send();
+    }
+});
+
+// Read: Get all EnquiryNumbers
+router.get('/enquiryNumbers', auth, async (req, res) => {
+    try {
+        const enquiryNumbers = await EnquiryNumber.find();
+        res.status(200).send(enquiryNumbers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send();
+    }
+});
+
+// Read: Get EnquiryNumber by ID
+router.get('/enquiryNumber/:id', auth, async (req, res) => {
+    try {
+        const enquiryNumber = await enquiryNumber.findById(req.params.id);
+        if (!enquiryNumber) {
+            return res.status(404).send("EnquiryNumber not found");
+        }
+        res.status(200).send(enquiryNumber);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send();
+    }
+});
+
+// Update: Update EnquiryNumber by ID
+router.patch('/enquiryNumber/:id', auth, async (req, res) => {
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['currentNumber', 'active'];
+
+    const isValidOperation = updates.every(update => allowedUpdates.includes(update));
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid updates!' });
+    }
+
+    try {
+        const existingEnquiryNumber = await EnquiryNumber.findById(req.params.id);
+
+        if (!existingEnquiryNumber) {
+            return res.status(404).send("EnquiryNumber not found");
+        }
+
+        // Disallow updating startingNumber
+        if ('startingNumber' in req.body) {
+            return res.status(400).send({ error: 'Cannot update startingNumber' });
+        }
+
+        // Ensure that the new currentNumber is always larger than the existing currentNumber
+        if ('currentNumber' in req.body && req.body.currentNumber <= existingEnquiryNumber.currentNumber) {
+            return res.status(400).send({ error: 'New currentNumber must be larger than the existing currentNumber' });
+        }
+
+        if ('active' in req.body && req.body.active === true) {
+            await EnquiryNumber.updateMany(
+                { _id: { $ne: req.params.id } }, 
+                { $set: { active: false } }
+            );
+        }
+
+        const enquiryNumber = await EnquiryNumber.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
+        );
+
+        if (!enquiryNumber) {
+            return res.status(404).send("EnquiryNumber not found");
+        }
+
+        res.status(200).send(enquiryNumber);
+    } catch (error) {
+        console.error(error);
+        res.status(400).send(error);
+    }
+});
+
+// Delete: Delete tradingEnquiryNumber by ID
+router.delete('/enquiryNumber/:id', auth, async (req, res) => {
+    try {
+        const enquiryNumber = await EnquiryNumber.findById(req.params.id);
+
+        if (!enquiryNumber) {
+            return res.status(404).send("EnquiryNumber not found");
+        }
+
+        if (enquiryNumber.active) {
+            return res.status(400).send("Cannot delete an active TradingEnquiryNumber");
+        }
+
+        const deletedEnquiryNumber = await EnquiryNumber.findByIdAndDelete(req.params.id);
+        res.status(200).send(deletedEnquiryNumber);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send();
+    }
+});
+
+
+
+
+// Create a new ProposalNumber
+router.post('/proposalNumber', auth, async (req, res) => {
+    try {
+        const ccc = {
+            prefix: req.body.prefix,
+            startingNumber : req.body.startingNumber,
+            currentNumber : req.body.startingNumber
+        }
+        const proposalNumber = new ProposalNumber(ccc);
+        await proposalNumber.save();
+        res.status(201).send(proposalNumber);
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
+// Read: Get the next ProposalNumber
+router.get('/nextProposalNumber', auth, async (req, res) => {
+    try {
+        const updatedCurrentNumber = await ProposalNumber.getNextNumber();
+        if (updatedCurrentNumber) {
+            res.status(200).send({ currentNumber: updatedCurrentNumber });
+        } else {
+            res.status(404).send("No active Sequence");
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send();
+    }
+});
+
+// Read: Get all ProposalNumbers
+router.get('/proposalNumbers', auth, async (req, res) => {
+    try {
+        const proposalNumbers = await ProposalNumber.find();
+        res.status(200).send(proposalNumbers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send();
+    }
+});
+
+// Read: Get ProposalNumber by ID
+router.get('/proposalNumber/:id', auth, async (req, res) => {
+    try {
+        const proposalNumber = await ProposalNumber.findById(req.params.id);
+        if (!tradingProposalNumber) {
+            return res.status(404).send("ProposalNumber not found");
+        }
+        res.status(200).send(proposalNumber);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send();
+    }
+});
+
+// Update: Update ProposalNumber by ID
+router.patch('/proposalNumber/:id', auth, async (req, res) => {
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['currentNumber', 'active'];
+
+    const isValidOperation = updates.every(update => allowedUpdates.includes(update));
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid updates!' });
+    }
+
+    try {
+        const existingTradingEnquiryNumber = await ProposalNumber.findById(req.params.id);
+
+        if (!existingTradingEnquiryNumber) {
+            return res.status(404).send("ProposalNumber not found");
+        }
+
+        // Disallow updating startingNumber
+        if ('startingNumber' in req.body) {
+            return res.status(400).send({ error: 'Cannot update startingNumber' });
+        }
+
+        // Ensure that the new currentNumber is always larger than the existing currentNumber
+        if ('currentNumber' in req.body && req.body.currentNumber <= existingTradingEnquiryNumber.currentNumber) {
+            return res.status(400).send({ error: 'New currentNumber must be larger than the existing currentNumber' });
+        }
+
+        if ('active' in req.body && req.body.active === true) {
+            await ProposalNumber.updateMany(
+                { _id: { $ne: req.params.id } }, 
+                { $set: { active: false } }
+            );
+        }
+
+        const tradingProposalNumber = await ProposalNumber.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
+        );
+
+        if (!tradingProposalNumber) {
+            return res.status(404).send("ProposalNumber not found");
+        }
+
+        res.status(200).send(tradingProposalNumber);
+    } catch (error) {
+        console.error(error);
+        res.status(400).send(error);
+    }
+});
+
+// Delete: Delete ProposalNumber by ID
+router.delete('/proposalNumber/:id', auth, async (req, res) => {
+    try {
+        const tradingProposalNumber = await ProposalNumber.findById(req.params.id);
+
+        if (!tradingProposalNumber) {
+            return res.status(404).send("ProposalNumber not found");
+        }
+
+        if (tradingProposalNumber.active) {
+            return res.status(400).send("Cannot delete an active ProposalNumber");
+        }
+
+        const deletedTradingEnquiryNumber = await ProposalNumber.findByIdAndDelete(req.params.id);
+        res.status(200).send(deletedTradingEnquiryNumber);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send();
+    }
+});
+
 
 
 module.exports = router;

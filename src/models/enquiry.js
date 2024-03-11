@@ -17,6 +17,10 @@ const enquirySchema = new mongoose.Schema({
             message: 'Invalid clientId. Client does not exist.'
         }
     },
+    quotationNumber: {
+        type: String,
+        required: true
+    },
     project: {
         type: String,
         trim: true

@@ -2,10 +2,23 @@ const express = require("express");
 const Enquiry = require("../models/enquiry");
 const router = new express.Router();
 const auth = require("../middleware/auth");
+const EnquiryNumber = require("../models/enquiryNumber");
 
 // Create a new enquiry
 router.post("/enquiries", auth, async (req, res) => {
-  const enquiry = new Enquiry(req.body);
+  const quotationNumber = await EnquiryNumber.getNextNumber();
+  const ccc = {
+    clientId: req.body.clientId,
+    project: req.body.project,
+    projectType: req.body.projectType,
+    capacity: req.body.capacity,
+    uom: req.body.uom,
+    offerSubmitted: req.body.offerSubmitted,
+    enquiryDate: req.body.enquiryDate,
+    remark: req.body.remark,
+    quotationNumber
+  }
+  const enquiry = new Enquiry(ccc);
   try {
     await enquiry.save();
     res.status(201).send(enquiry);
